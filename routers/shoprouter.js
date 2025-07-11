@@ -12,4 +12,5 @@ route.post('/add/shop', AddShop)
 var{reviewadd}=require('../controller/shop/review')
 route.post('/add/review',reviewadd)
 
+
 module.exports = route
