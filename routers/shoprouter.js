@@ -5,4 +5,7 @@ var route = express.Router();
 // var { login } = require('./controller/login')
 // route.post('/login', login)
 
+var { AddShop } = require('./../controller/shop/addShop')
+route.post('/add/shop', AddShop)
+
 module.exports = route
