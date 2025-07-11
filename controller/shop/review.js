@@ -1,13 +1,11 @@
-var model = require("../model/reviewadd");
+var model = require("../../model/shop/review");
 
 module.exports.reviewadd = async (req, res) => {
     try {
-        let user =req.user
+ 
+        let { user_id,shop_id, comment, heading, rating } = req.body;
 
-        let user_id = user.u_id
-        let { product_id, comment, heading, rating } = req.body;
-
-        if (!product_id || !comment || !heading || !rating || !user_id) {
+        if (!shop_id || !comment || !heading || !rating || !user_id) {
             return res.send({
                 result: false,
                 message: "insufficient parameters"
@@ -29,27 +27,27 @@ module.exports.reviewadd = async (req, res) => {
             });
         }
 
-        let checkproduct = await model.checkproductQuery(product_id);
-        if (checkproduct.length == 0) {
+        let checkshop = await model.checkshopQuery(shop_id);
+        if (checkshop.length == 0) {
             return res.send({
                 result: false,
-                message: "product not found"
+                message: "shop not found"
             });
         }
 
         // Add review
-        let reviewadd = await model.reviewaddQuery(product_id, comment, heading, user_id, rating);
+        let reviewadd = await model.reviewaddQuery(shop_id, comment, heading, user_id, rating);
 
         if (reviewadd.affectedRows > 0) {
 
-            let ratings = await model.getAllRatingsQuery(product_id);
+            let ratings = await model.getAllRatingsQuery(shop_id);
 
             if (ratings.length > 0) {
                 let totalRating = ratings.reduce((acc, cur) => acc + cur.r_rating, 0);
 
                 let avgRating = (totalRating / ratings.length).toFixed(1);
 
-                await model.updateProductRatingQuery(product_id, avgRating);
+                await model.updateshopRatingQuery(shop_id, avgRating);
             }
 
             return res.send({
