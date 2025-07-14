@@ -110,7 +110,7 @@ module.exports.Register = async (req, res) => {
             } else {
                 return res.send({
                     result: false,
-                    message: "Failed to register delivery boy"
+                    message: "Failed to register delivery staff"
                 });
             }
         });
