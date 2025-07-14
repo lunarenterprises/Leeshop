@@ -16,9 +16,9 @@ module.exports.AddShop = async (req, res) => {
 
             }
 
-            let { shop_name, shop_address, shop_phone, about_us, ratings, product_and_service, opening_hours, location, delivery_option } = fields
+            let { shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, delivery_option } = fields
 
-            if (!shop_name || !shop_address || !shop_phone || !about_us || !ratings || !product_and_service || !opening_hours || !location || !delivery_option) {
+            if (!shop_name || !owner_name || !business_category || !shop_address || !state || !city || !working_days || !description || !primary_phone || !secondary_phone || !whatsapp_number || !email || !password || !product_and_service || !opening_hours || !location || !delivery_option) {
                 return res.status(400).json({
                     result: false,
                     message: 'Insufficient parameters',
@@ -26,7 +26,7 @@ module.exports.AddShop = async (req, res) => {
 
             }
 
-            let addshop = await model.addshop(shop_name, shop_address, shop_phone, about_us, ratings, product_and_service, opening_hours, location, delivery_option);
+            let addshop = await model.addshop(shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, delivery_option);
 
             let shop_id = addshop.insertId;
 
