@@ -1,6 +1,5 @@
 var model = require("../../model/user/listUser");
 
-
 module.exports.ListUser =async(req,res)=>{
     try {
         let u_id=req.body?.u_id

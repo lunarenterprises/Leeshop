@@ -2,7 +2,7 @@ let model = require('../../model/deliveryboy/deliveryboy')
 
 module.exports.lisṭDeliveryBoy = async (req, res) => {
     try {
-        let { u_id } = req.body || {}
+        let { u_id, } = req.body || {}
 
         let condition = ''
 

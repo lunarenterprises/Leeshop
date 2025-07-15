@@ -2,6 +2,7 @@ var model = require('../../model/shop/addShop');
 var formidable = require("formidable");
 var fs = require("fs");
 const path = require("path");
+
 module.exports.AddShop = async (req, res) => {
 
     try {
@@ -16,17 +17,21 @@ module.exports.AddShop = async (req, res) => {
 
             }
 
-            let { shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, delivery_option } = fields
+            let { service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, delivery_option, service_area_coverage } = fields
 
-            if (!shop_name || !owner_name || !business_category || !shop_address || !state || !city || !working_days || !description || !primary_phone || !secondary_phone || !whatsapp_number || !email || !password || !product_and_service || !opening_hours || !location || !delivery_option) {
+            if (!service_or_shop || !shop_name || !owner_name || !business_category || !shop_address || !state || !city || !working_days || !description || !primary_phone || !secondary_phone || !whatsapp_number || !email || !password || !product_and_service || !opening_hours || !location || !delivery_option) {
                 return res.status(400).json({
                     result: false,
                     message: 'Insufficient parameters',
                 });
 
             }
+            if (service_or_shop == 'shop') {
 
-            let addshop = await model.addshop(shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, delivery_option);
+                var addshop = await model.addshop(service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, delivery_option);
+            } else {
+                var addshop = await model.addshop(service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, delivery_option, service_area_coverage);
+            }
 
             let shop_id = addshop.insertId;
 
@@ -46,14 +51,13 @@ module.exports.AddShop = async (req, res) => {
                     const imagePath = "/uploads/shops/" + file.originalFilename;
 
                     const insertResult = await model.AddImagesQuery(shop_id, imagePath);
-                    console.log(insertResult, "image insert result");
+                    // console.log(insertResult, "image insert result");
                 }
             }
             if (addshop.affectedRows > 0) {
                 return res.status(200).json({
                     result: true,
                     message: 'Shop added successfully',
-                    data: addshop,
                 });
             } else {
                 return res.status(500).json({
@@ -174,15 +178,9 @@ module.exports.editshops = async (req, res) => {
             }
 
             const {
-                sh_id,
-                shop_name,
-                shop_address,
-                shop_phone,
-                about_us,
-                product_and_service,
-                opening_hours,
-                location,
-                delivery_option
+                sh_id,sh_shop_or_service,sh_name,sh_owner_name,sh_category,sh_address,sh_state,sh_city,sh_working_days,
+                sh_description,sh_primary_phone,sh_secondary_phone,sh_whatsapp_number,sh_email,sh_password,
+                sh_product_and_service,sh_opening_hours,sh_location,sh_delivery_option,sh_service_area_coverage
             } = fields;
 
             if (!sh_id) {

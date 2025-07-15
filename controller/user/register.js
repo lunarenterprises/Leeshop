@@ -17,11 +17,11 @@ module.exports.Register = async (req, res) => {
             }
             var date = moment().format("YYYY-MM-DD")
            
-            var { name, email, mobile, address, district, state, zip_code, bank_name, account_no, bank_branch, ifsc_code, password } = fields
-            if (!name || !email || !mobile || !address || !district || !state || !zip_code || !bank_name || !account_no || !bank_branch || !ifsc_code || !password) {
+            var { name, email, mobile, address, district, state, zip_code, password } = fields
+            if (!name || !email || !mobile || !address || !district || !state || !zip_code || !password) {
                 return res.send({
                     result: false,
-                    message: "Insufficient parameters"
+                    message: "All fields are required"
                 })
             }
 
