@@ -8,6 +8,12 @@ var route = express.Router();
 var { AddShop } = require('./../controller/shop/addShop')
 route.post('/add/shop', AddShop)
 
+var { ListShops } = require('./../controller/shop/addShop')
+route.post('/list/shop', ListShops)
+
+var { editshops } = require('./../controller/shop/addShop')
+route.post('/edit/shop', editshops)
+
 var{reviewadd}=require('../controller/shop/review')
 route.post('/add/review',reviewadd)
 

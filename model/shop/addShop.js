@@ -13,16 +13,19 @@ module.exports.AddImagesQuery = async (shop_id, imagepath) => {
     var data = query(Query, [shop_id, imagepath]);
     return data;
 }
+
 module.exports.listshopsQuerry = async (condition) => {
     var Query = `select * from shops ${condition} `;
     var data = await query(Query);
     return data;
 }
+
 module.exports.GetImages = async (si_shop_id) => {
     var Query = `select * from shopimages where si_shop_id=?`;
     var data = await query(Query, [si_shop_id]);
     return data;
 }
+
 module.exports.checkshopQuery = async (sh_id) => {
     var Query = `select * from shops where sh_id=?`;
     var data = await query(Query, [sh_id]);
@@ -47,8 +50,15 @@ module.exports.UpdateshopDetails = async (updateQuery, sh_id) => {
     return data;
 
 }
+
 module.exports.updateshopImage = async (imagepath, shop_id) => {
     var Query = `update shops set si_image=? where sh_id=?`;
     var data = await query(Query, [imagepath, shop_id]);
+    return data;
+}
+
+module.exports.DeleteFilesQuery = async (sh_id, fileKeys) => {
+    var Query = `delete from shopimages where si_shop_id=? and s_id not in (${fileKeys})`;
+    var data = await query(Query, [sh_id, fileKeys]);
     return data;
 }
