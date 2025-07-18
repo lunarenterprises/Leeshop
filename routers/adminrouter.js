@@ -23,6 +23,9 @@ route.post('/category/delete', deletecategory)
 var { editcategory } =require('../controller/admin/addcategory')
 route.post('/category/edit', editcategory)
 
+var{deleteuser}=require('../controller/user/listUser')
+route.post('/delete/user',deleteuser)
+
 
 
 module.exports = route

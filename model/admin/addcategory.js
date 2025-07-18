@@ -21,7 +21,7 @@ module.exports.RemovecategoryQuery = async (c_id) => {
 }
 
 module.exports.UpdatecategoryDetails = async (categoryname, c_id) => {
-    var Query = ` UPDATE category SET c_name =? WHERE c_id = ?`
+    var Query = ` UPDATE category SET c_name =? WHERE c_id = ?`;
     var data = await query(Query, [categoryname, c_id]);
     return data;
 

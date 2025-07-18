@@ -7,3 +7,8 @@ module.exports.ListUserQuery = async (condition) => {
     var data = query(Query);
     return data;
 };
+module.exports.delteuserquery=async(u_id)=>{
+    var Query=`DELETE FROM users WHERE u_id=?`;
+    var data = query(Query,[u_id]);
+    return data;
+}
