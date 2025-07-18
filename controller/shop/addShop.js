@@ -17,9 +17,9 @@ module.exports.AddShop = async (req, res) => {
 
             }
 
-            let { service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, delivery_option, service_area_coverage } = fields
+            let { service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location,latitude ,longitude, delivery_option, service_area_coverage } = fields
 
-            if (!service_or_shop || !shop_name || !owner_name || !business_category || !shop_address || !state || !city || !working_days || !description || !primary_phone || !secondary_phone || !whatsapp_number || !email || !password || !product_and_service || !opening_hours || !location || !delivery_option) {
+            if (!service_or_shop || !shop_name || !owner_name || !business_category || !shop_address || !state || !city || !working_days || !description || !primary_phone || !secondary_phone || !whatsapp_number || !email || !password || !product_and_service || !opening_hours || !location || !latitude || !longitude || !delivery_option) {
                 return res.status(400).json({
                     result: false,
                     message: 'Insufficient parameters',
@@ -28,9 +28,9 @@ module.exports.AddShop = async (req, res) => {
             }
             if (service_or_shop == 'shop') {
 
-                var addshop = await model.addshop(service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, delivery_option);
+                var addshop = await model.addshop(service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location,latitude ,longitude, delivery_option);
             } else {
-                var addshop = await model.addshop(service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, delivery_option, service_area_coverage);
+                var addshop = await model.addshop(service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location,latitude ,longitude, delivery_option, service_area_coverage);
             }
 
             let shop_id = addshop.insertId;

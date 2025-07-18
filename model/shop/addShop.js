@@ -2,9 +2,9 @@ var db = require('../../config/db');
 var util = require("util");
 const query = util.promisify(db.query).bind(db);
 
-module.exports.addshop = async (service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, delivery_option, service_area_coverage) => {
-    var Query = `INSERT INTO shops (sh_shop_or_service,sh_name,sh_owner_name,sh_category,sh_address,sh_state,sh_city,sh_working_days,sh_description,sh_primary_phone,sh_secondary_phone,sh_whatsapp_number,sh_email,sh_password,sh_product_and_service,sh_opening_hours,sh_location,sh_delivery_option,sh_service_area_coverage) VALUES ( ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-    var data = query(Query, [service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, delivery_option, service_area_coverage]);
+module.exports.addshop = async (service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, latitude, longitude, delivery_option, service_area_coverage) => {
+    var Query = `INSERT INTO shops (sh_shop_or_service,sh_name,sh_owner_name,sh_category,sh_address,sh_state,sh_city,sh_working_days,sh_description,sh_primary_phone,sh_secondary_phone,sh_whatsapp_number,sh_email,sh_password,sh_product_and_service,sh_opening_hours,sh_location,sh_latitude ,sh_longitude,sh_delivery_option,sh_service_area_coverage) VALUES ( ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    var data = query(Query, [service_or_shop, shop_name, owner_name, business_category, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, latitude, longitude, delivery_option, service_area_coverage]);
     return data;
 }
 
@@ -58,7 +58,7 @@ module.exports.updateshopImage = async (imagepath, shop_id) => {
 }
 
 module.exports.DeleteFilesQuery = async (sh_id, fileKeys) => {
-    var Query = `delete from shopimages where si_shop_id=? and s_id not in (${fileKeys})`;
+    var Query = `delete from shopimages where si_shop_id=? and si_id not in (${fileKeys})`;
     var data = await query(Query, [sh_id, fileKeys]);
     return data;
 }

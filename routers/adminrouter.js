@@ -8,12 +8,14 @@ var route = express.Router();
 var { DeleteDeliveryBoy } = require('../controller/deliveryboy/deliveryboy')
 route.post('/delete/delivery-staffs', DeleteDeliveryBoy)
 
+var { DeleteShops } = require('../controller/shop/addShop')
+route.post('/delete/shop', DeleteShops)
+
 var { categoryadd } =require('../controller/admin/addcategory')
 route.post('/category/add', categoryadd)
 
 var { Listcategory }=require('../controller/admin/addcategory')
 route.post('/category/list', Listcategory)
-
 
 var { deletecategory } =require('../controller/admin/addcategory')
 route.post('/category/delete', deletecategory)
