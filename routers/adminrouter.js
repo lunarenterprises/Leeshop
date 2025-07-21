@@ -6,7 +6,10 @@ var route = express.Router();
 // route.post('/login', login)
 
 var { DeleteDeliveryBoy } = require('../controller/deliveryboy/deliveryboy')
-route.post('/delete/delivery-staffs', DeleteDeliveryBoy)
+route.post('/delete/delivery_staffs', DeleteDeliveryBoy)
+
+var { DeleteShops } = require('../controller/shop/addShop')
+route.post('/delete/shop', DeleteShops)
 
 var { categoryadd } =require('../controller/admin/addcategory')
 route.post('/category/add', categoryadd)
