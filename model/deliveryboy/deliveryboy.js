@@ -64,7 +64,7 @@ module.exports.DeleteDeliveryBoyQuery = async (u_id) => {
 }
 
 module.exports.listDeliveryBoyQuery = async (condition) => {
-    var Query = ` SELECT * FROM users where u_role ='deliverystaff' ${condition}`;
+    var Query = ` SELECT * FROM users where u_role ='' ${condition}`;
     var data = query(Query);
     return data;
 }

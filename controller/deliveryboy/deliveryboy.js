@@ -2,12 +2,18 @@ let model = require('../../model/deliveryboy/deliveryboy')
 
 module.exports.lisṭDeliveryBoy = async (req, res) => {
     try {
-        let { u_id, } = req.body || {}
+        let { u_id, search,u_delivery_status} = req.body || {}
 
         let condition = ''
 
         if (u_id) {
-            condition = `where u_id = ${u_id}`
+            condition = `and u_id = ${u_id}`
+        }
+        if(u_delivery_status){
+            condition=`and u_delivery_status = ${u_delivery_status}`
+    }
+        if(search){
+            condition=` and (u_name LIKE '%${search}%' OR u_location  LIKE '%${search}%' OR u_state LIKE '%${search}%' )`;
         }
         let listDeliveryBoy = await model.listDeliveryBoyQuery(condition);
 
