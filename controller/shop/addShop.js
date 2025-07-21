@@ -77,13 +77,25 @@ module.exports.AddShop = async (req, res) => {
 };
 module.exports.ListShops = async (req, res) => {
     try {
-        let { sh_id } = req.body || {}
+        let { sh_id, c_id, search,sh_shop_or_service } = req.body || {}
 
         let condition = ''
 
         if (sh_id) {
             condition = `where sh_id = ${sh_id}`
         }
+        if (c_id) {
+            condition = `where sh_category_id = ${c_id}`
+        }
+        if (search) {
+            condition = `WHERE (
+        sh_shop_or_service LIKE '%${search}%' OR 
+       sh_location LIKE '%${search}%' OR  sh_name Like   '%${search}%' OR  sh_category_name LIKE  '%${search}%' OR sh_city LIKE '%${search}%' OR sh_state LIKE '%${search}%' )`;
+        }
+        if(sh_shop_or_service){
+            condition =`where sh_shop_or_service=${sh_shop_or_service}`
+        }
+
 
         let listshops = await model.listshopsQuerry(condition);
 
