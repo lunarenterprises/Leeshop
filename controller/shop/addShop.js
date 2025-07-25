@@ -164,8 +164,6 @@ module.exports.DeleteShops = async (req, res) => {
         }
 
 
-
-
     } catch (error) {
         return res.send({
             result: false,
@@ -246,8 +244,8 @@ module.exports.editshops = async (req, res) => {
             // Delete associated files except image
             if (files) {
                 const fileKeys = Object.keys(files).filter(item => item !== 'image');
-                console.log("fileKeys :",fileKeys);
-                
+                console.log("fileKeys :", fileKeys);
+
                 if (fileKeys.length > 0) {
                     await model.DeleteFilesQuery(sh_id, fileKeys); // Make sure DeleteFilesQuery accepts sh_id and fileKeys
                 }
@@ -268,8 +266,8 @@ module.exports.editshops = async (req, res) => {
 
                     const imagePath = "/uploads/shops/" + file.originalFilename;
 
-                    const imageUpdate = await model.AddImagesQuery(sh_id,imagePath);
-                    
+                    const imageUpdate = await model.AddImagesQuery(sh_id, imagePath);
+
                     if (!imageUpdate || imageUpdate.affectedRows === 0) {
                         return res.send({
                             result: false,
@@ -292,4 +290,5 @@ module.exports.editshops = async (req, res) => {
         });
     }
 };
+
 
