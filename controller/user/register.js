@@ -26,7 +26,7 @@ module.exports.Register = async (req, res) => {
             })
         } else {
 
-            console.log(email, hashedPassword);
+            // console.log(email, hashedPassword);
 
             var hashedPassword = await bcrypt.hash(password, 10);
 

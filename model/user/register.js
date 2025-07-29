@@ -11,5 +11,5 @@ module.exports.AddUser=async ( email, password,date)=>{
 module.exports.CheckMail=async(email)=>{
     var Query=`SELECT * FROM users WHERE u_email=?`
     var data=query(Query,[email]);
-    return data;
+    return data
 }
