@@ -18,7 +18,7 @@ module.exports.Register = async (req, res) => {
                 });
             }
 
-            const { name, email, mobile, secondary_mobile, whatsapp_contact, password, vehicle_type, work_type } = fields;
+            const { name, email, mobile, secondary_mobile, whatsapp_contact, password, vehicle_type, work_type,location } = fields;
 
             if (!name || !email || !mobile || !whatsapp_contact || !vehicle_type || !work_type || !password) {
                 return res.send({
@@ -29,13 +29,13 @@ module.exports.Register = async (req, res) => {
 
             let role = 'deliverystaff'
 
-            const checkMail = await model.CheckMail(email);
-            if (checkMail.length > 0) {
-                return res.send({
-                    result: false,
-                    message: "This email is already registered "
-                });
-            }
+             let checkmail = await model.checkUserOrShop(email);
+        if (checkmail.length > 0) {
+            return res.send({
+                result: false,
+                message: "This email already registered "
+            })
+        }
 
             const checkMobile = await model.CheckMobile(mobile);
             if (checkMobile.length > 0) {
@@ -64,6 +64,7 @@ module.exports.Register = async (req, res) => {
                 hashedPassword,
                 vehicle_type,
                 work_type,
+                location,
                 date,
                 role
             );

@@ -30,3 +30,9 @@ module.exports.updateshopRatingQuery = async (shop_id, avgRating) => {
     return data;
 }
 
+module.exports.listShopReviewQuery = async (condition,limit,offset) => {
+    var Query = `select r.*,u.u_name,u.u_profile_pic from reviews r
+    LEFT JOIN users u ON r.r_user_id = u.u_id ${condition} ORDER BY r.r_id DESC LIMIT ? OFFSET ?`;
+    var data = query(Query,[limit,offset]);
+    return data;
+}

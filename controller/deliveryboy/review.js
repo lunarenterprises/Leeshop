@@ -81,7 +81,11 @@ module.exports.lisṭDeliveryBoyReview = async (req, res) => {
             condition = `where r.r_delivery_staff_id='${deli_staff_id}' and r.r_user_id = '${u_id}' `
         }
 
-        let listDeliveryBoyreview = await model.listDeliveryBoyReviewQuery(condition);
+         let page = parseInt(req.body.page) || 1;
+        let limit = parseInt(req.body.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        let listDeliveryBoyreview = await model.listDeliveryBoyReviewQuery(condition,limit,offset);
 
         if (listDeliveryBoyreview.length > 0) {
             return res.send({

@@ -1,4 +1,7 @@
 let model = require('../../model/deliveryboy/deliveryboy')
+var formidable = require("formidable");
+var fs = require("fs");
+const path = require("path");
 
 module.exports.lisṭDeliveryBoy = async (req, res) => {
     try {
@@ -15,7 +18,13 @@ module.exports.lisṭDeliveryBoy = async (req, res) => {
         if(search){
             condition=` and (u_name LIKE '%${search}%' OR u_location  LIKE '%${search}%' OR u_state LIKE '%${search}%' )`;
         }
-        let listDeliveryBoy = await model.listDeliveryBoyQuery(condition);
+
+        let page = parseInt(req.body.page) || 1;
+        let limit = parseInt(req.body.limit) || 10;
+        const offset = (page - 1) * limit;
+
+
+        let listDeliveryBoy = await model.listDeliveryBoyQuery(condition,limit,offset);
 
         if (listDeliveryBoy.length > 0) {
             return res.send({
@@ -54,7 +63,7 @@ module.exports.EditDeliveryStaff = async (req, res) => {
                 });
             }
 
-            let { u_id, u_name, u_email, u_mobile, u_secondary_mobile, u_whatsapp_contact, u_vehicle_type, u_work_type, u_profile_pic, u_licence_pic } = fields
+            let { u_id, u_name, u_email, u_mobile, u_secondary_mobile, u_whatsapp_contact, u_vehicle_type, u_work_type} = fields
 
             if (!u_id) {
                 return res.send({

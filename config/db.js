@@ -6,7 +6,9 @@ var pool =mysql.createPool({
     user:"u160357475_leeshop",
     password:"123abcAB@123",
     database:"u160357475_leeshop",
-    connectTimeout: 30000  // <-- 30 seconds timeout
+    connectTimeout: 30000,
+    dateStrings:true
+
 });
 pool.getConnection((err,connection)=>{
     if (err)throw err;

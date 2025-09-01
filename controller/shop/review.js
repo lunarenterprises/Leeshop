@@ -67,3 +67,46 @@ module.exports.reviewadd = async (req, res) => {
         });
     }
 };
+
+module.exports.lisṭShopReview = async (req, res) => {
+    try {
+       let { u_id, shop_id } = req.body
+
+        let condition = ''
+
+        if (shop_id) {
+            condition = `where r.r_shop_id='${shop_id}'`
+        }
+        if (shop_id && u_id) {
+            condition = `where r.r_shop_id='${shop_id}' and r.r_user_id = '${u_id}' `
+        }
+
+         let page = parseInt(req.body.page) || 1;
+        let limit = parseInt(req.body.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        let listShopreview = await model.listShopReviewQuery(condition,limit,offset);
+
+        if (listShopreview.length > 0) {
+            return res.send({
+                result: true,
+                message: "data retrieved",
+                list: listShopreview,
+
+            });
+
+        } else {
+            return res.send({
+                result: false,
+                message: "data not found",
+            });
+        }
+
+    } catch (error) {
+        return res.send({
+            result: false,
+            message: error.message,
+
+        });
+    }
+}

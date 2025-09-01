@@ -14,7 +14,7 @@ module.exports.EditPersonalInfo = async (req, res) => {
                 });
             }
 
-            let { u_id, name, email, mobile, address, district, state, zip_code } = fields
+            let { u_id, name, email, mobile, address, district, state,location, zip_code } = fields
 
             if (!u_id) {
                 return res.send({
@@ -72,6 +72,13 @@ module.exports.EditPersonalInfo = async (req, res) => {
                         condition = `set u_state ='${state}' `
                     } else {
                         condition += `,u_state='${state}'`
+                    }
+                }
+                if (location) {
+                    if (condition == '') {
+                        condition = `set u_location ='${location}' `
+                    } else {
+                        condition += `,u_location='${location}'`
                     }
                 }
                 if (zip_code) {

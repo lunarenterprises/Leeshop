@@ -16,7 +16,6 @@ module.exports.Register = async (req, res) => {
                 message: "All fields are required"
             })
         }
-        console.log(email, hashedPassword);
 
         let checkmail = await model.CheckMail(email);
         if (checkmail.length > 0) {

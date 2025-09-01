@@ -6,6 +6,9 @@ var route = express.Router();
 var { Register } = require('../controller/user/register')
 route.post('/register', Register)
 
+var { login } = require('../controller/login')
+route.post('/login', login)
+
 var{ListUser}=require('../controller/user/listUser')
 route.post('/list/user',ListUser)
 

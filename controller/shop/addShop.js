@@ -2,6 +2,7 @@ var model = require('../../model/shop/addShop');
 var formidable = require("formidable");
 var fs = require("fs");
 const path = require("path");
+let bcrypt = require('bcrypt')
 
 module.exports.AddShop = async (req, res) => {
 
@@ -16,21 +17,32 @@ module.exports.AddShop = async (req, res) => {
                 });
 
             }
+            let { service_or_shop, shop_name, owner_name, category_name, category_id, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, latitude, longitude, delivery_option, service_area_coverage } = fields
 
-            let { service_or_shop, shop_name, owner_name, category_name,category_id, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location,latitude ,longitude, delivery_option, service_area_coverage } = fields
-
-            if (!service_or_shop || !shop_name || !owner_name || !category_name || !category_id || !shop_address || !state || !city || !working_days || !description || !primary_phone || !secondary_phone || !whatsapp_number || !email || !password || !product_and_service || !opening_hours || !location || !latitude || !longitude || !delivery_option) {
+            if (!service_or_shop || !shop_name || !owner_name || !category_name || !category_id || !shop_address || !state || !city || !working_days || !description || !primary_phone || !secondary_phone || !whatsapp_number || !email || !password || !product_and_service || !opening_hours || !location || !latitude || !longitude) {
                 return res.status(400).json({
                     result: false,
                     message: 'Insufficient parameters',
                 });
 
             }
+            let checkmail = await model.checkUserOrShop(email);
+            // console.log("checkmail :",checkmail);
+
+            if (checkmail.length > 0) {
+                return res.send({
+                    result: false,
+                    message: "This email already registered "
+                })
+            }
+
+            var hashedPassword = await bcrypt.hash(password, 10);
+
             if (service_or_shop == 'shop') {
 
-                var addshop = await model.addshop(service_or_shop, shop_name, owner_name,category_id, category_name, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location,latitude ,longitude, delivery_option);
+                var addshop = await model.addshop(service_or_shop, shop_name, owner_name, category_id, category_name, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, hashedPassword, product_and_service, opening_hours, location, latitude, longitude, delivery_option);
             } else {
-                var addshop = await model.addshop(service_or_shop, shop_name, owner_name, category_id, category_name, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location,latitude ,longitude, delivery_option, service_area_coverage);
+                var addshop = await model.addshop(service_or_shop, shop_name, owner_name, category_id, category_name, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, hashedPassword, product_and_service, opening_hours, location, latitude, longitude, delivery_option, service_area_coverage);
             }
 
             let shop_id = addshop.insertId;
@@ -77,27 +89,30 @@ module.exports.AddShop = async (req, res) => {
 };
 module.exports.ListShops = async (req, res) => {
     try {
-        let { sh_id, c_id, search,sh_shop_or_service } = req.body || {}
+        let { sh_id, c_id, search, sh_shop_or_service } = req.body || {}
 
         let condition = ''
 
         if (sh_id) {
-            condition = `where sh_id = ${sh_id}`
+            condition = `where sh_id = '${sh_id}' `
         }
         if (c_id) {
-            condition = `where sh_category_id = ${c_id}`
+            condition = `where sh_category_id = '${c_id}' `
         }
         if (search) {
-            condition = `WHERE (
-        sh_shop_or_service LIKE '%${search}%' OR 
-       sh_location LIKE '%${search}%' OR  sh_name Like   '%${search}%' OR  sh_category_name LIKE  '%${search}%' OR sh_city LIKE '%${search}%' OR sh_state LIKE '%${search}%' )`;
+            condition = `WHERE (sh_shop_or_service LIKE '%${search}%' OR sh_location LIKE '%${search}%' OR sh_name Like '%${search}%' OR sh_category_name LIKE '%${search}%' OR sh_city LIKE '%${search}%' OR sh_state LIKE '%${search}%' )`;
         }
-        if(sh_shop_or_service){
-            condition =`where sh_shop_or_service=${sh_shop_or_service}`
+        if (sh_shop_or_service) {
+            condition = `where sh_shop_or_service='${sh_shop_or_service}' `
         }
 
 
-        let listshops = await model.listshopsQuerry(condition);
+        let page = parseInt(req.body.page) || 1;
+        let limit = parseInt(req.body.limit) || 10;
+        const offset = (page - 1) * limit;
+
+
+        let listshops = await model.listshopsQuerry(condition, limit, offset);
 
         if (listshops.length > 0) {
             var data = await Promise.all(
@@ -188,9 +203,9 @@ module.exports.editshops = async (req, res) => {
             }
 
             const {
-                sh_id, sh_shop_or_service, sh_name, sh_owner_name, sh_category, sh_address, sh_state, sh_city,
+                sh_id, sh_shop_or_service, sh_name, sh_owner_name, sh_category_id,sh_category_name, sh_address, sh_state, sh_city,
                 sh_working_days, sh_description, sh_primary_phone, sh_secondary_phone, sh_whatsapp_number,
-                sh_email, sh_product_and_service, sh_opening_hours, sh_location,
+                sh_email, sh_product_and_service, sh_opening_hours, sh_location, sh_latitude, sh_longitude,
                 sh_delivery_option, sh_service_area_coverage
             } = fields;
 
@@ -214,7 +229,8 @@ module.exports.editshops = async (req, res) => {
             if (sh_shop_or_service) updates.push(`sh_shop_or_service='${sh_shop_or_service}'`);
             if (sh_name) updates.push(`sh_name='${sh_name}'`);
             if (sh_owner_name) updates.push(`sh_owner_name='${sh_owner_name}'`);
-            if (sh_category) updates.push(`sh_category='${sh_category}'`);
+            if (sh_category_name) updates.push(`sh_category_name='${sh_category_name}'`);
+            if (sh_category_id) updates.push(`sh_category_id='${sh_category_id}'`);
             if (sh_address) updates.push(`sh_address='${sh_address}'`);
             if (sh_state) updates.push(`sh_state='${sh_state}'`);
             if (sh_city) updates.push(`sh_city='${sh_city}'`);
@@ -227,6 +243,8 @@ module.exports.editshops = async (req, res) => {
             if (sh_product_and_service) updates.push(`sh_product_and_service='${sh_product_and_service}'`);
             if (sh_opening_hours) updates.push(`sh_opening_hours='${sh_opening_hours}'`);
             if (sh_location) updates.push(`sh_location='${sh_location}'`);
+            if (sh_latitude) updates.push(`sh_latitude='${sh_latitude}'`);
+            if (sh_longitude) updates.push(`sh_longitude='${sh_longitude}'`);
             if (sh_delivery_option) updates.push(`sh_delivery_option='${sh_delivery_option}'`);
             if (sh_service_area_coverage) updates.push(`sh_service_area_coverage='${sh_service_area_coverage}'`);
 

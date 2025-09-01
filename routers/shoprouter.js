@@ -17,5 +17,7 @@ route.post('/edit/shop', editshops)
 var{reviewadd}=require('../controller/shop/review')
 route.post('/add/review',reviewadd)
 
+var{lisṭShopReview}=require('../controller/shop/review')
+route.post('/list/review',lisṭShopReview)
 
 module.exports = route
