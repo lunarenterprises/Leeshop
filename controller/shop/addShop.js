@@ -89,21 +89,30 @@ module.exports.AddShop = async (req, res) => {
 };
 module.exports.ListShops = async (req, res) => {
     try {
-        let { sh_id, c_id, search, sh_shop_or_service } = req.body || {}
+        let { sh_id, c_id, search, allsearch, sh_shop_or_service, city } = req.body || {}
 
         let condition = ''
-
+        console.log(sh_id, c_id, search, allsearch, sh_shop_or_service, city)
         if (sh_id) {
             condition = `where sh_id = '${sh_id}' `
         }
         if (c_id) {
             condition = `where sh_category_id = '${c_id}' `
         }
-        if (search) {
-            condition = `WHERE (sh_shop_or_service LIKE '%${search}%' OR sh_location LIKE '%${search}%' OR sh_name Like '%${search}%' OR sh_category_name LIKE '%${search}%' OR sh_city LIKE '%${search}%' OR sh_state LIKE '%${search}%' )`;
+        if (search && city) {
+            condition = `WHERE sh_city ='${city}' and (sh_shop_or_service LIKE '%${search}%' OR sh_location LIKE '%${search}%' OR sh_name Like '%${search}%' OR sh_category_name LIKE '%${search}%' OR sh_city LIKE '%${search}%' OR sh_state LIKE '%${search}%' )`;
+        }
+        if (search && city && sh_shop_or_service) {
+            condition = `WHERE sh_city ='${city}' and 
+                    (sh_shop_or_service = '${sh_shop_or_service}'OR sh_shop_or_service = 'both') and 
+                    (sh_shop_or_service LIKE '%${search}%' OR sh_location LIKE '%${search}%' OR sh_name Like '%${search}%' OR sh_category_name LIKE '%${search}%' OR sh_city LIKE '%${search}%' OR sh_state LIKE '%${search}%' )`;
+        }
+        if (allsearch) {
+            condition = `WHERE (sh_shop_or_service LIKE '%${allsearch}%' OR sh_location LIKE '%${allsearch}%' OR sh_name Like '%${allsearch}%' OR sh_category_name LIKE '%${allsearch}%' OR sh_city LIKE '%${allsearch}%' OR sh_state LIKE '%${allsearch}%' )`;
         }
         if (sh_shop_or_service) {
-            condition = `where sh_shop_or_service='${sh_shop_or_service}' `
+            condition = `where sh_shop_or_service='${sh_shop_or_service}'OR sh_shop_or_service = 'both'
+ `
         }
 
 
@@ -203,7 +212,7 @@ module.exports.editshops = async (req, res) => {
             }
 
             const {
-                sh_id, sh_shop_or_service, sh_name, sh_owner_name, sh_category_id,sh_category_name, sh_address, sh_state, sh_city,
+                sh_id, sh_shop_or_service, sh_name, sh_owner_name, sh_category_id, sh_category_name, sh_address, sh_state, sh_city,
                 sh_working_days, sh_description, sh_primary_phone, sh_secondary_phone, sh_whatsapp_number,
                 sh_email, sh_product_and_service, sh_opening_hours, sh_location, sh_latitude, sh_longitude,
                 sh_delivery_option, sh_service_area_coverage

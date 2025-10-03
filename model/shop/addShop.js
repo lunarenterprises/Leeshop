@@ -28,6 +28,7 @@ module.exports.AddImagesQuery = async (shop_id, imagepath) => {
 
 module.exports.listshopsQuerry = async (condition,limit,offset) => {
     var Query = `select * from shops ${condition} LIMIT ? OFFSET ? `;
+    console.log(Query)
     var data = await query(Query,[limit,offset]);
     return data;
 }

@@ -17,7 +17,7 @@ module.exports.Register = async (req, res) => {
             })
         }
 
-        let checkmail = await model.CheckMail(email);
+        let checkmail = await model.checkUserOrShop(email);
         if (checkmail.length > 0) {
             return res.send({
                 result: false,

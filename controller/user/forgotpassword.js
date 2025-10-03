@@ -1,4 +1,4 @@
-var  model =require('../../model/user/forgotpasswords')
+var model = require('../../model/user/forgotpasswords')
 var nodemailer = require('nodemailer');
 var moment = require('moment')
 var bcrypt = require('bcrypt')
@@ -6,21 +6,27 @@ var bcrypt = require('bcrypt')
 module.exports.forgotpassword = async (req, res) => {
     try {
         var email = req.body.email;
-        var u_role = req.body.u_role
-        if (!email || !u_role) {
+        if (!email) {
             return res.send({
                 return: false,
-                message: "insufficient parameters"
-
+                message: "Email is required"
             })
         }
-        let checkemail = await model.CheckEmailQuery(email, u_role)
+        var checkemail = await model.checkUserOrShop(email)
         if (checkemail.length > 0) {
-            let u_id = checkemail[0]?.u_id
+
+            let u_id = checkemail[0]?.id
             const otp = Math.floor(1000 + Math.random() * 9000);
             const expirationDate = moment().add(5, 'minutes').format('YYYY-MM-DD-HH:mm:ss');
-            
-            let storetoken = await model.StoreResetToken(otp, expirationDate, u_id);
+            console.log(checkemail[0]?.role, u_id, otp, "maill");
+
+            if (checkemail[0]?.role == 'shop') {
+                var storetoken = await model.ShopStoreResetToken(otp, expirationDate, u_id);
+
+            } else {
+                var storetoken = await model.UserStoreResetToken(otp, expirationDate, u_id);
+
+            }
 
             let transporter = nodemailer.createTransport({
                 host: "smtp.hostinger.com",
@@ -91,7 +97,13 @@ module.exports.forgotpassword = async (req, res) => {
             `
             });
             nodemailer.getTestMessageUrl(infos);
-            await model.updateOtpStatus(email, "unverified")
+
+            if (checkemail[0]?.role == 'shop') {
+                await model.ShopupdateOtpStatus(email, "unverified")
+            } else {
+                await model.USerupdateOtpStatus(email, "unverified")
+
+            }
             return res.send({
                 result: true,
                 message: "Password reset email sent "
@@ -122,7 +134,16 @@ module.exports.verifyOtp = async (req, res) => {
             });
         }
 
-        const tokenInfo = await model.ValidateResetToken(email, otp);
+        var checkemail = await model.checkUserOrShop(email)
+
+        if (checkemail.length > 0) {
+
+            if (checkemail[0]?.role == 'shop') {
+                var tokenInfo = await model.ShopValidateResetToken(email, otp);
+            } else {
+                var tokenInfo = await model.UserValidateResetToken(email, otp);
+            }
+        }
 
         if (!tokenInfo || tokenInfo.length === 0) {
             return res.status(400).send({
@@ -140,7 +161,12 @@ module.exports.verifyOtp = async (req, res) => {
             });
         }
 
-        await model.updateOtpStatus(email, "verified");
+        if (checkemail[0]?.role == 'shop') {
+            await model.ShopupdateOtpStatus(email, "verified")
+        } else {
+            await model.USerupdateOtpStatus(email, "verified")
+
+        }
 
         return res.send({
             result: true,
@@ -225,16 +251,33 @@ module.exports.ResetPassword = async (req, res) => {
 </body>
 </html>
 `
-console.log(req.body);
+        console.log(req.body);
 
-        if(!email || !password) {
+        if (!email || !password) {
             return res.send({
                 result: false,
                 message: "insufficent parameter"
             });
         }
+        let checkemail = await model.checkUserOrShopPassword(email)
+        console.log(checkemail[0]?.role, "checkemail");
+
+        if (checkemail.length == 0) {
+            return res.send({
+                result: false,
+                message: "Email not found"
+            });
+        }
+
         var hashedpassword = await bcrypt.hash(password, 10)
-        let ChangePassword = await model.updatepassword(hashedpassword, email);
+        if (checkemail[0]?.role == 'shop') {
+            var ChangePassword = await model.Shopupdatepassword(hashedpassword, email);
+
+        } else {
+            var ChangePassword = await model.Userupdatepassword(hashedpassword, email);
+
+        }
+
         if (ChangePassword.affectedRows) {
             let transporter = nodemailer.createTransport({
                 host: "smtp.hostinger.com",
@@ -251,7 +294,7 @@ console.log(req.body);
                 from: "leeshop<support@choiceglobal.in>",
                 to: email,
                 subject: "changed password",
-                html:html
+                html: html
             })
             nodemailer.getTestMessageUrl(infos);
             return res.send({

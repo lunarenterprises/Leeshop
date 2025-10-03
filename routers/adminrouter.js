@@ -26,6 +26,7 @@ route.post('/category/edit', editcategory)
 var{deleteuser}=require('../controller/user/listUser')
 route.post('/delete/user',deleteuser)
 
-
+var{Dashboard}=require('../controller/dashboard')
+route.post('/dashboard',Dashboard)
 
 module.exports = route

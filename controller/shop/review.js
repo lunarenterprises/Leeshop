@@ -70,6 +70,7 @@ module.exports.reviewadd = async (req, res) => {
 
 module.exports.lisṭShopReview = async (req, res) => {
     try {
+        
        let { u_id, shop_id } = req.body
 
         let condition = ''

@@ -63,7 +63,7 @@ module.exports.EditDeliveryStaff = async (req, res) => {
                 });
             }
 
-            let { u_id, u_name, u_email, u_mobile, u_secondary_mobile, u_whatsapp_contact, u_vehicle_type, u_work_type} = fields
+            let { u_id, u_name, u_email, u_mobile, u_secondary_mobile, u_whatsapp_contact, u_vehicle_type, u_work_type,u_delivery_status} = fields
 
             if (!u_id) {
                 return res.send({
@@ -126,6 +126,13 @@ module.exports.EditDeliveryStaff = async (req, res) => {
                         condition = `set u_work_type ='${u_work_type}' `
                     } else {
                         condition += `,u_work_type='${u_work_type}'`
+                    }
+                }
+                if (u_delivery_status) {
+                    if (condition == '') {
+                        condition = `set u_delivery_status ='${u_delivery_status}' `
+                    } else {
+                        condition += `,u_delivery_status='${u_delivery_status}'`
                     }
                 }
                 if (condition !== '') {
