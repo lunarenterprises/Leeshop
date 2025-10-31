@@ -100,59 +100,67 @@ module.exports.ListShops = async (req, res) => {
         if (sh_id) conditions.push(`sh_id = '${sh_id}'`);
         if (c_id) conditions.push(`sh_category_id = '${c_id}'`);
         if (city) {
-            conditions.push(`sh_location LIKE '%${city}%' OR sh_city LIKE '%${city}%' OR sh_state LIKE '%${city}%'`);
+            conditions.push(`(
+        LOWER(sh_location) LIKE LOWER('%${city}%') OR 
+        LOWER(sh_city) LIKE LOWER('%${city}%') OR 
+        LOWER(sh_state) LIKE LOWER('%${city}%') OR 
+        LOWER(sh_address) LIKE LOWER('%${city}%')
+    )`);
         }
-        if (sh_shop_or_service) conditions.push(`(sh_shop_or_service='${sh_shop_or_service}' OR sh_shop_or_service='both')`);
+
+        if (sh_shop_or_service) {
+            conditions.push(`(
+        LOWER(sh_shop_or_service) = LOWER('${sh_shop_or_service}') 
+        OR LOWER(sh_shop_or_service) = 'both'
+    )`);
+        }
 
         if (search) {
             conditions.push(`(
-                sh_shop_or_service LIKE '%${search}%' OR
-                sh_location LIKE '%${search}%' OR
-                sh_name LIKE '%${search}%' OR
-                sh_category_name LIKE '%${search}%' OR
-                sh_city LIKE '%${search}%' OR
-                sh_state LIKE '%${search}%'
-            )`);
+        LOWER(sh_shop_or_service) LIKE LOWER('%${search}%') OR
+        LOWER(sh_location) LIKE LOWER('%${search}%') OR
+        LOWER(sh_name) LIKE LOWER('%${search}%') OR
+        LOWER(sh_category_name) LIKE LOWER('%${search}%') OR
+        LOWER(sh_city) LIKE LOWER('%${search}%') OR
+        LOWER(sh_state) LIKE LOWER('%${search}%') OR
+        LOWER(sh_address) LIKE LOWER('%${search}%')
+    )`);
         }
 
         if (allsearch) {
-            conditions = [`
-                (sh_shop_or_service LIKE '%${allsearch}%' OR
-                sh_location LIKE '%${allsearch}%' OR
-                sh_name LIKE '%${allsearch}%' OR
-                sh_category_name LIKE '%${allsearch}%' OR
-                sh_city LIKE '%${allsearch}%' OR
-                sh_state LIKE '%${allsearch}%')
-            `];
+            conditions = [`(
+        LOWER(sh_shop_or_service) LIKE LOWER('%${allsearch}%') OR
+        LOWER(sh_location) LIKE LOWER('%${allsearch}%') OR
+        LOWER(sh_name) LIKE LOWER('%${allsearch}%') OR
+        LOWER(sh_category_name) LIKE LOWER('%${allsearch}%') OR
+        LOWER(sh_city) LIKE LOWER('%${allsearch}%') OR
+        LOWER(sh_state) LIKE LOWER('%${allsearch}%')
+    )`];
         }
 
         // Build WHERE clause
         let condition = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+        console.log("condition : ", condition)
 
         let page = parseInt(req.body.page) || 1;
         let limit = parseInt(req.body.limit) || 10;
         const offset = (page - 1) * limit;
 
         let listshops = await model.listshopsQuerry(condition, limit, offset);
-
+        let data = []
         if (listshops.length > 0) {
-            const data = await Promise.all(
+            data = await Promise.all(
                 listshops.map(async (el) => {
                     el.shopimages = await model.GetImages(el.sh_id);
                     return el;
                 })
             );
-            return res.send({
-                result: true,
-                message: "Shops are listed",
-                list: data
-            });
-        } else {
-            return res.send({
-                result: false,
-                message: "Data not found"
-            });
         }
+        return res.send({
+            result: true,
+            message: "Shops are listed",
+            list: data
+        });
     } catch (error) {
         return res.send({
             result: false,
