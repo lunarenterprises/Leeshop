@@ -79,7 +79,26 @@ module.exports.DeleteDeliveryBoyQuery = async (u_id) => {
 }
 
 module.exports.listDeliveryBoyQuery = async (condition,limit,offset) => {
-    var Query = ` SELECT * FROM users where u_role ='deliverystaff' ${condition} LIMIT ? OFFSET ?`;
+    var Query = ` SELECT 
+    u_id,
+    u_name,
+    u_email,
+    u_mobile,
+    u_secondary_mobile,
+    u_whatsapp_contact,
+    u_vehicle_type,
+    u_work_type,
+    u_profile_pic,
+    u_licence_pic,
+    u_address,
+    u_district,
+    u_state,
+    u_location,
+    u_pincode,
+    u_joindate,
+    u_rating,
+    u_delivery_status
+    FROM users where u_role ='deliverystaff' ${condition} LIMIT ? OFFSET ?`;
     var data = query(Query,[limit,offset]);
     return data;
 }
