@@ -30,6 +30,7 @@ module.exports.listDeliveryBoy = async (req, res) => {
                 LOWER(u_address) LIKE LOWER('%${search}%')
             )`);
         }
+        condition.push(`u_status='active'`)
 
         // Build WHERE clause safely
         let condition = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
