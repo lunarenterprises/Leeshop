@@ -87,73 +87,80 @@ module.exports.AddShop = async (req, res) => {
         });
     }
 };
+
+
 module.exports.ListShops = async (req, res) => {
     try {
-        let { sh_id, c_id, search, allsearch, sh_shop_or_service, city } = req.body || {}
+        let { sh_id, c_id, search, allsearch, sh_shop_or_service, city } = req.body || {};
+        console.log(sh_id, c_id, search, allsearch, sh_shop_or_service, city);
 
-        let condition = ''
-        console.log(sh_id, c_id, search, allsearch, sh_shop_or_service, city)
-        if (sh_id) {
-            condition = `where sh_id = '${sh_id}' `
+        // Start with an array of conditions
+        let conditions = [];
+
+        if (sh_id) conditions.push(`sh_id = '${sh_id}'`);
+        if (c_id) conditions.push(`sh_category_id = '${c_id}'`);
+        if (city) {
+            conditions.push(`sh_location LIKE '%${city}%' OR sh_city LIKE '%${city}%' OR sh_state LIKE '%${city}%'`);
         }
-        if (c_id) {
-            condition = `where sh_category_id = '${c_id}' `
+        if (sh_shop_or_service) conditions.push(`(sh_shop_or_service='${sh_shop_or_service}' OR sh_shop_or_service='both')`);
+
+        if (search) {
+            conditions.push(`(
+                sh_shop_or_service LIKE '%${search}%' OR
+                sh_location LIKE '%${search}%' OR
+                sh_name LIKE '%${search}%' OR
+                sh_category_name LIKE '%${search}%' OR
+                sh_city LIKE '%${search}%' OR
+                sh_state LIKE '%${search}%'
+            )`);
         }
-        if (search && city) {
-            condition = `WHERE sh_city ='${city}' and (sh_shop_or_service LIKE '%${search}%' OR sh_location LIKE '%${search}%' OR sh_name Like '%${search}%' OR sh_category_name LIKE '%${search}%' OR sh_city LIKE '%${search}%' OR sh_state LIKE '%${search}%' )`;
-        }
-        if (search && city && sh_shop_or_service) {
-            condition = `WHERE sh_city ='${city}' and 
-                    (sh_shop_or_service = '${sh_shop_or_service}'OR sh_shop_or_service = 'both') and 
-                    (sh_shop_or_service LIKE '%${search}%' OR sh_location LIKE '%${search}%' OR sh_name Like '%${search}%' OR sh_category_name LIKE '%${search}%' OR sh_city LIKE '%${search}%' OR sh_state LIKE '%${search}%' )`;
-        }
+
         if (allsearch) {
-            condition = `WHERE (sh_shop_or_service LIKE '%${allsearch}%' OR sh_location LIKE '%${allsearch}%' OR sh_name Like '%${allsearch}%' OR sh_category_name LIKE '%${allsearch}%' OR sh_city LIKE '%${allsearch}%' OR sh_state LIKE '%${allsearch}%' )`;
-        }
-        if (sh_shop_or_service) {
-            condition = `where sh_shop_or_service='${sh_shop_or_service}'OR sh_shop_or_service = 'both'
- `
+            conditions = [`
+                (sh_shop_or_service LIKE '%${allsearch}%' OR
+                sh_location LIKE '%${allsearch}%' OR
+                sh_name LIKE '%${allsearch}%' OR
+                sh_category_name LIKE '%${allsearch}%' OR
+                sh_city LIKE '%${allsearch}%' OR
+                sh_state LIKE '%${allsearch}%')
+            `];
         }
 
+        // Build WHERE clause
+        let condition = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
         let page = parseInt(req.body.page) || 1;
         let limit = parseInt(req.body.limit) || 10;
         const offset = (page - 1) * limit;
 
-
         let listshops = await model.listshopsQuerry(condition, limit, offset);
 
         if (listshops.length > 0) {
-            var data = await Promise.all(
+            const data = await Promise.all(
                 listshops.map(async (el) => {
-                    var sh_id = el.sh_id;
-                    let getshopimage = await model.GetImages(sh_id)
-                    el.shopimages = getshopimage;
+                    el.shopimages = await model.GetImages(el.sh_id);
                     return el;
                 })
-            )
-
+            );
             return res.send({
                 result: true,
-                message: "shops are listed",
+                message: "Shops are listed",
                 list: data
-            })
+            });
         } else {
             return res.send({
                 result: false,
-                message: "data not found",
-
+                message: "Data not found"
             });
-
         }
     } catch (error) {
         return res.send({
             result: false,
-            message: error.message,
+            message: error.message
         });
     }
+};
 
-}
 
 module.exports.DeleteShops = async (req, res) => {
     try {

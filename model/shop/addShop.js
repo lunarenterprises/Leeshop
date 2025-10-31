@@ -26,10 +26,32 @@ module.exports.AddImagesQuery = async (shop_id, imagepath) => {
     return data;
 }
 
-module.exports.listshopsQuerry = async (condition,limit,offset) => {
-    var Query = `select * from shops ${condition} LIMIT ? OFFSET ? `;
-    console.log(Query)
-    var data = await query(Query,[limit,offset]);
+module.exports.listshopsQuerry = async (condition, limit, offset) => {
+    var Query = `select 
+    sh_id,
+sh_shop_or_service,
+sh_name,
+sh_email,
+sh_owner_name,
+sh_category_name,
+sh_address,
+sh_state,
+sh_city,
+sh_working_days,
+sh_description,
+sh_primary_phone,
+sh_secondary_phone,
+sh_whatsapp_number,
+sh_ratings,
+sh_product_and_service,
+sh_opening_hours,
+sh_location,
+sh_latitude,
+sh_longitude,
+sh_delivery_option,
+sh_service_area_coverage
+     from shops ${condition} LIMIT ? OFFSET ? `;
+    var data = await query(Query, [limit, offset]);
     return data;
 }
 
