@@ -5,8 +5,8 @@ var route = express.Router();
 var { Register } = require('../controller/deliveryboy/register')
 route.post('/register/delivery_staffs', Register)
 
-var { lisṭDeliveryBoy } = require('../controller/deliveryboy/deliveryboy')
-route.post('/list/delivery_staffs', lisṭDeliveryBoy)
+var { listDeliveryBoy } = require('../controller/deliveryboy/deliveryboy')
+route.post('/list/delivery_staffs', listDeliveryBoy)
 
 var { EditDeliveryStaff } = require('../controller/deliveryboy/deliveryboy')
 route.post('/edit/delivery_staffs', EditDeliveryStaff)

@@ -3,59 +3,58 @@ var formidable = require("formidable");
 var fs = require("fs");
 const path = require("path");
 
-module.exports.lisṭDeliveryBoy = async (req, res) => {
+module.exports.listDeliveryBoy = async (req, res) => {
     try {
-        let { u_id, search, u_delivery_status, location } = req.body || {}
+        let { u_id, search, u_delivery_status, location } = req.body || {};
 
-        let condition = ''
+        let conditions = [];
 
         if (u_id) {
-            condition = `and u_id = '${u_id}'`
+            conditions.push(`u_id = '${u_id}'`);
         }
+
         if (location) {
-            condition = `and u_location LIKE '%${location}%'`
+            conditions.push(`LOWER(u_location) LIKE LOWER('%${location}%') OR LOWER(u_district) LIKE LOWER('%${search}%') OR
+                LOWER(u_state) LIKE LOWER('%${search}%') OR LOWER(u_address) LIKE LOWER('%${search}%')`);
         }
-        if (location && u_delivery_status) {
-            condition = `and u_location LIKE '%${location}%' and u_delivery_status = '${u_delivery_status}'`
+
+        if (u_delivery_status) {
+            conditions.push(`u_delivery_status = '${u_delivery_status}'`);
         }
-        if (location && search) {
-            condition = ` and u_location LIKE '%${location}%' and (u_name LIKE '%${search}%' OR u_district  LIKE '%${search}%' OR u_state LIKE '%${search}%' )`;
-        }
+
         if (search) {
-            condition = `and (u_name LIKE '%${search}%' OR u_district  LIKE '%${search}%' OR u_state LIKE '%${search}%' )`;
+            conditions.push(`(
+                LOWER(u_name) LIKE LOWER('%${search}%') OR
+                LOWER(u_district) LIKE LOWER('%${search}%') OR
+                LOWER(u_state) LIKE LOWER('%${search}%') OR
+                LOWER(u_address) LIKE LOWER('%${search}%')
+            )`);
         }
 
+        // Build WHERE clause safely
+        let condition = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-        let page = parseInt(req.body.page) || 1;
-        let limit = parseInt(req.body.limit) || 10;
+        console.log("Final condition:", condition);
+
+        // Pagination
+        let page = parseInt(req?.body?.page) || 1;
+        let limit = parseInt(req?.body?.limit) || 10;
         const offset = (page - 1) * limit;
 
-
+        // Query model
         let listDeliveryBoy = await model.listDeliveryBoyQuery(condition, limit, offset);
-
-        if (listDeliveryBoy.length > 0) {
-            return res.send({
-                result: true,
-                message: "data retrieved",
-                list: listDeliveryBoy,
-
-            });
-
-        } else {
-            return res.send({
-                result: false,
-                message: "data not found",
-            });
-        }
-
+        return res.send({
+            result: true,
+            message: "Data retrieved successfully",
+            list: listDeliveryBoy,
+        });
     } catch (error) {
         return res.send({
             result: false,
             message: error.message,
-
         });
     }
-}
+};
 
 
 module.exports.EditDeliveryStaff = async (req, res) => {
