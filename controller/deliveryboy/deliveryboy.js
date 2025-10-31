@@ -34,7 +34,7 @@ module.exports.listDeliveryBoy = async (req, res) => {
         conditions.push(`u_status='active'`)
 
         // Build WHERE clause safely
-        let condition = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+        let condition = conditions.length > 0 ? `AND ${conditions.join(' AND ')}` : '';
 
         console.log("Final condition:", condition);
 
