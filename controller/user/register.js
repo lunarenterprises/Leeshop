@@ -9,8 +9,8 @@ module.exports.Register = async (req, res) => {
 
         var date = moment().format("YYYY-MM-DD")
 
-        var { email, password } =  req.body;
-        if (!email || !password) {
+        var { name,email,mobile, password,address,district,state,zipcode } =  req.body;
+        if (! name || !email || !password) {
             return res.send({
                 result: false,
                 message: "All fields are required"
@@ -29,7 +29,7 @@ module.exports.Register = async (req, res) => {
 
             var hashedPassword = await bcrypt.hash(password, 10);
 
-            let adduser = await model.AddUser(email,hashedPassword,date);
+            let adduser = await model.AddUser(name,email,mobile, hashedPassword,address,district,state,zipcode,date);
             if (adduser.affectedRows > 0) {
 
                 return res.send({

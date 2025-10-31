@@ -259,7 +259,7 @@ module.exports.ResetPassword = async (req, res) => {
                 message: "insufficent parameter"
             });
         }
-        let checkemail = await model.checkUserOrShopPassword(email)
+        let checkemail = await model.checkUserOrShop(email)
         console.log(checkemail[0]?.role, "checkemail");
 
         if (checkemail.length == 0) {
@@ -275,7 +275,6 @@ module.exports.ResetPassword = async (req, res) => {
 
         } else {
             var ChangePassword = await model.Userupdatepassword(hashedpassword, email);
-
         }
 
         if (ChangePassword.affectedRows) {

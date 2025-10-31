@@ -76,4 +76,14 @@ module.exports.DeleteFilesQuery = async (sh_id, fileKeys) => {
     return data;
 }
 
+module.exports.checkshopImageQuery = async (sh_id) => {
+    var Query = `select * from shopimages where si_id=?`;
+    var data = await query(Query, [sh_id]);
+    return data;
+}
 
+module.exports.removeshopImageQuery = async (sh_id) => {
+    var Query = `delete from shopimages where si_id=?`;
+    var data = await query(Query, [sh_id]);
+    return data;
+}

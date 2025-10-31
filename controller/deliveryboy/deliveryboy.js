@@ -5,26 +5,33 @@ const path = require("path");
 
 module.exports.lisṭDeliveryBoy = async (req, res) => {
     try {
-        let { u_id, search,u_delivery_status} = req.body || {}
+        let { u_id, search, u_delivery_status, location } = req.body || {}
 
         let condition = ''
 
         if (u_id) {
-            condition = `and u_id = ${u_id}`
+            condition = `and u_id = '${u_id}'`
         }
-        if(u_delivery_status){
-            condition=`and u_delivery_status = ${u_delivery_status}`
-    }
-        if(search){
-            condition=` and (u_name LIKE '%${search}%' OR u_location  LIKE '%${search}%' OR u_state LIKE '%${search}%' )`;
+        if (location) {
+            condition = `and u_location LIKE '%${location}%'`
         }
+        if (location && u_delivery_status) {
+            condition = `and u_location LIKE '%${location}%' and u_delivery_status = '${u_delivery_status}'`
+        }
+        if (location && search) {
+            condition = ` and u_location LIKE '%${location}%' and (u_name LIKE '%${search}%' OR u_district  LIKE '%${search}%' OR u_state LIKE '%${search}%' )`;
+        }
+        if (search) {
+            condition = `and (u_name LIKE '%${search}%' OR u_district  LIKE '%${search}%' OR u_state LIKE '%${search}%' )`;
+        }
+
 
         let page = parseInt(req.body.page) || 1;
         let limit = parseInt(req.body.limit) || 10;
         const offset = (page - 1) * limit;
 
 
-        let listDeliveryBoy = await model.listDeliveryBoyQuery(condition,limit,offset);
+        let listDeliveryBoy = await model.listDeliveryBoyQuery(condition, limit, offset);
 
         if (listDeliveryBoy.length > 0) {
             return res.send({
@@ -63,7 +70,7 @@ module.exports.EditDeliveryStaff = async (req, res) => {
                 });
             }
 
-            let { u_id, u_name, u_email, u_mobile, u_secondary_mobile, u_whatsapp_contact, u_vehicle_type, u_work_type,u_delivery_status} = fields
+            let { u_id, u_name, u_email, u_mobile, u_secondary_mobile, u_whatsapp_contact, u_vehicle_type, u_work_type, u_delivery_status, location } = fields
 
             if (!u_id) {
                 return res.send({
@@ -133,6 +140,13 @@ module.exports.EditDeliveryStaff = async (req, res) => {
                         condition = `set u_delivery_status ='${u_delivery_status}' `
                     } else {
                         condition += `,u_delivery_status='${u_delivery_status}'`
+                    }
+                }
+                if (location) {
+                    if (condition == '') {
+                        condition = `set u_location ='${location}' `
+                    } else {
+                        condition += `,u_location='${location}'`
                     }
                 }
                 if (condition !== '') {

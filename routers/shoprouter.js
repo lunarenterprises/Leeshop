@@ -11,6 +11,9 @@ route.post('/list/shop', ListShops)
 var { DeleteShops } = require('./../controller/shop/addShop')
 route.post('/delete/shop', DeleteShops)
 
+var { DeleteShopsImage } = require('./../controller/shop/addShop')
+route.post('/delete/shop-image', DeleteShopsImage)
+
 var { editshops } = require('./../controller/shop/addShop')
 route.post('/edit/shop', editshops)
 

@@ -29,4 +29,7 @@ route.post('/delete/user',deleteuser)
 var{Dashboard}=require('../controller/dashboard')
 route.post('/dashboard',Dashboard)
 
+var{updateBookingStatus}=require('../controller/admin/updatePayment')
+route.post('/update/payment',updateBookingStatus)
+
 module.exports = route

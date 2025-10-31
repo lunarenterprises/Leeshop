@@ -19,7 +19,7 @@ module.exports.AddShop = async (req, res) => {
             }
             let { service_or_shop, shop_name, owner_name, category_name, category_id, shop_address, state, city, working_days, description, primary_phone, secondary_phone, whatsapp_number, email, password, product_and_service, opening_hours, location, latitude, longitude, delivery_option, service_area_coverage } = fields
 
-            if (!service_or_shop || !shop_name || !owner_name || !category_name || !category_id || !shop_address || !state || !city || !working_days || !description || !primary_phone || !secondary_phone || !whatsapp_number || !email || !password || !product_and_service || !opening_hours || !location || !latitude || !longitude) {
+            if (!service_or_shop || !shop_name || !owner_name || !category_name || !category_id || !shop_address || !state || !city || !working_days || !description || !primary_phone || !whatsapp_number || !email || !password || !product_and_service || !opening_hours || !location || !latitude || !longitude) {
                 return res.status(400).json({
                     result: false,
                     message: 'Insufficient parameters',
@@ -269,14 +269,14 @@ module.exports.editshops = async (req, res) => {
             }
 
             // Delete associated files except image
-            if (files) {
-                const fileKeys = Object.keys(files).filter(item => item !== 'image');
-                console.log("fileKeys :", fileKeys);
+            // if (files) {
+            //     const fileKeys = Object.keys(files).filter(item => item !== 'image');
+            //     console.log("fileKeys :", fileKeys);
 
-                if (fileKeys.length > 0) {
-                    await model.DeleteFilesQuery(sh_id, fileKeys); // Make sure DeleteFilesQuery accepts sh_id and fileKeys
-                }
-            }
+            //     if (fileKeys.length > 0) {
+            //         await model.DeleteFilesQuery(sh_id, fileKeys); // Make sure DeleteFilesQuery accepts sh_id and fileKeys
+            //     }
+            // }
 
             // Handle shop image update
             if (files && files.image) {
@@ -318,4 +318,45 @@ module.exports.editshops = async (req, res) => {
     }
 };
 
+module.exports.DeleteShopsImage = async (req, res) => {
+    try {
+        let { image_id } = req.body;
+        if (image_id) {
+            let checkshopimage = await model.checkshopImageQuery(image_id);
+            if (checkshopimage.length == 0) {
+                return res.send({
+                    result: false,
+                    message: "invalid shop image id"
+                })
+            }
 
+            var deletesection = await model.removeshopImageQuery(image_id);
+            if (deletesection.affectedRows > 0) {
+                return res.send({
+                    result: true,
+                    messsage: "shop image deleted successfully"
+                });
+            } else {
+                return res.send({
+                    result: false,
+                    message: "failed to deleted shop image"
+                });
+
+            }
+        } else {
+            return res.send({
+                result: false,
+                message: "shop id is required"
+            })
+        }
+
+
+    } catch (error) {
+        return res.send({
+            result: false,
+            message: error.message,
+
+        });
+
+    }
+}
