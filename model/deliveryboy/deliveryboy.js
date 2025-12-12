@@ -4,14 +4,9 @@ const query = util.promisify(db.query).bind(db);
 
 
 module.exports.checkUserOrShop = async (email) => {
-    const userQuery = `SELECT * FROM users WHERE u_email = ?`;
-    const shopQuery = `SELECT * FROM shops WHERE sh_email = ?`;
-
-    const userResult = await query(userQuery, [email]);
-    if (userResult.length > 0) return userResult;
-
-    const shopResult = await query(shopQuery, [email]);
-    return shopResult;
+    const userQuery = `SELECT * FROM users WHERE u_email = ? and u_role ='deliverystaff' `;
+    const data = await query(userQuery, [email]);
+    return data;
 };
 
 module.exports.AddDeliveryBoy = async (name, email, mobile, secondary_mobile, whatsapp_contact, hashedPassword, vehicle_type, work_type,location, date, role) => {
@@ -21,24 +16,14 @@ module.exports.AddDeliveryBoy = async (name, email, mobile, secondary_mobile, wh
 }
 
 module.exports.CheckMobile = async (mobile) => {
-  const userQuery = `SELECT * FROM users WHERE u_mobile = ? `;
-    const shopQuery = `SELECT * FROM shops WHERE sh_primary_phone = ?`;
-
-    const userResult = await query(userQuery, [mobile]);
-    if (userResult.length > 0) return userResult;
-
-    const shopResult = await query(shopQuery, [mobile]);
+  const userQuery = `SELECT * FROM users WHERE u_mobile = ? and u_role ='deliverystaff' `;
+    const shopResult = await query(userQuery, [mobile]);
     return shopResult;
 }
 
 module.exports.CheckwhatsappContact = async (mobile) => {
-   const userQuery = `SELECT * FROM users WHERE u_whatsapp_contact = ?`;
-    const shopQuery = `SELECT * FROM shops WHERE sh_whatsapp_number = ?`;
-
-    const userResult = await query(userQuery, [mobile]);
-    if (userResult.length > 0) return userResult;
-
-    const shopResult = await query(shopQuery, [mobile]);
+   const userQuery = `SELECT * FROM users WHERE u_whatsapp_contact = ? and u_role ='deliverystaff'`;
+    const shopResult = await query(userQuery, [mobile]);
     return shopResult;
 }
 

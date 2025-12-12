@@ -4,25 +4,23 @@ const jwt = require('jsonwebtoken');
 
 module.exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        if (!email || !password) {
+        const { email, password,role } = req.body;
+        if (!email || !password || !role) {
             return res.status(400).json({
                 result: false,
-                message: 'insufficient parameters',
+                message: 'All fields are required',
             });
         }
 
-        const SECRET_KEY = 'dkjghkdghfhglknghdxlkdnflsfjopoijoigjhpokp';
-
-        const checkuser = await model.checkUserOrShop(email);
-        if (checkuser.length === 0) {
+        const checkuser = await model.checkUserOrShop(email,role);
+        if (!checkuser) {
             return res.status(400).json({
                 result: false,
-                message: 'user not found',
+                message: 'User not found',
             });
         }
 
-        const user = checkuser[0];
+        const user = checkuser;
 console.log("user:",user)
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
@@ -38,7 +36,7 @@ console.log("user:",user)
             role: user.role,
         };
 
-        const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' });
 
         return res.status(200).json({
             result: true,

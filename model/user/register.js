@@ -10,12 +10,7 @@ module.exports.AddUser = async (name, email, mobile, hashedPassword, address, di
 }
 
 module.exports.checkUserOrShop = async (email) => {
-    const userQuery = `SELECT u_id AS id, u_email AS email, u_password AS password, u_role AS role, 'user' AS source FROM users WHERE u_email = ?`;
-    const shopQuery = `SELECT sh_id AS id, sh_email AS email, sh_password AS password, 'shop' AS role, 'shop' AS source FROM shops WHERE sh_email = ?`;
-
-    const userResult = await query(userQuery, [email]);
-    if (userResult.length > 0) return userResult;
-
-    const shopResult = await query(shopQuery, [email]);
+    const userQuery = `SELECT * FROM users WHERE u_email = ? and u_role ='user'`;
+    const shopResult = await query(userQuery, [email]);
     return shopResult;
 };

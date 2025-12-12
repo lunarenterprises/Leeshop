@@ -43,9 +43,7 @@ module.exports.Register = async (req, res) => {
                 })
             }
 
-
         }
-
 
     } catch (error) {
         return res.send({
